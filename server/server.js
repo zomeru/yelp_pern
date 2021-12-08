@@ -27,43 +27,84 @@ app.get('/api/v1/restaurants', async (req, res) => {
 });
 
 // Get a restaurant
-app.get('/api/v1/restaurants/:id', (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    data: {
-      restaurant: 'Restaurant 1',
-    },
-  });
+app.get('/api/v1/restaurants/:id', async (req, res) => {
+  try {
+    const results = await db.query('SELECT * FROM restaurants WHERE id = $1', [
+      req.params.id,
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        restaurant: results.rows[0],
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 // Create a restaurant
-app.post('/api/v1/restaurants', (req, res) => {
-  console.log(req.params.id);
-  console.log(req.body);
-  res.status(201).json({
-    status: 'success',
-    data: {
-      restaurant: 'Restaurant 1',
-    },
-  });
+app.post('/api/v1/restaurants', async (req, res) => {
+  try {
+    const { name, location, price_range } = req.body;
+
+    const results = await db.query(
+      'INSERT INTO restaurants (name, location, price_range) VALUES ($1, $2, $3) RETURNING *',
+      [name, location, price_range]
+    );
+
+    console.log(results.rows[0]);
+
+    res.status(201).json({
+      status: 'success',
+      data: {
+        restaurant: results.rows[0],
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 // Update a restaurant
-app.put('/api/v1/restaurants/:id', (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    data: {
-      restaurant: 'Restaurant 1',
-    },
-  });
+app.put('/api/v1/restaurants/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, location, price_range } = req.body;
+
+    const results = await db.query(
+      'UPDATE restaurants SET name = $1, location = $2, price_range = $3 WHERE id = $4 RETURNING *',
+      [name, location, price_range, id]
+    );
+
+    console.log(results.rows[0]);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        restaurant: results.rows[0],
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 // Delete a restaurant
-app.delete('/api/v1/restaurants/:id', (req, res) => {
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
+app.delete('/api/v1/restaurants/:id', async (req, res) => {
+  try {
+    const results = await db.query('DELETE FROM restaurants WHERE id = $1', [
+      req.params.id,
+    ]);
+
+    res.status(204).json({
+      status: 'success',
+      data: null,
+    });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 const PORT = process.env.PORT;
