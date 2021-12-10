@@ -1,7 +1,7 @@
 const express = require('express');
 const db = require('./db');
 const cors = require('cors');
-const morgan = require('morgan');
+// const morgan = require('morgan');
 require('dotenv').config();
 
 const app = express();
@@ -137,7 +137,7 @@ app.post('/api/v1/restaurants/:id/addReview', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
