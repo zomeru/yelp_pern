@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import RestaurantFinder from '../apis/RestaurantFinder';
 import { RestaurantContext } from '../context/RestaurantContext';
 import { useNavigate } from 'react-router-dom';
+import StarRating from './StarRating';
 
 const RestaurantList = () => {
   let navigate = useNavigate();
@@ -38,6 +39,19 @@ const RestaurantList = () => {
     navigate(`/restaurants/${id}`);
   };
 
+  const renderRating = restaurant => {
+    if (!restaurant.reviews_count) {
+      return <span className='text-warning'>No reviews yet</span>;
+    }
+
+    return (
+      <>
+        <StarRating rating={restaurant.average_rating} />
+        <span className='text-warning ml-1'>({restaurant.reviews_count})</span>
+      </>
+    );
+  };
+
   return (
     <div className='list-group'>
       <table className='table table-hover table-dark'>
@@ -61,7 +75,7 @@ const RestaurantList = () => {
                 <td>{restaurant.name}</td>
                 <td>{restaurant.location}</td>
                 <td>{'$'.repeat(restaurant.price_range)}</td>
-                <td>Rating</td>
+                <td>{renderRating(restaurant)}</td>
                 <td>
                   <button
                     onClick={e => handleUpdate(e, restaurant.id)}
